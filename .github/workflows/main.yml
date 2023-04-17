@@ -9,17 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout B repo
+    - name: Checkout B Repo
       uses: actions/checkout@v2
       with:
         repository: Nord-RP/nord_compiler
-    - name: Checkout A repo
+        ref: main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
+    - name: Checkout A Repo
       uses: actions/checkout@v2
       with:
         repository: Nord-RP/nord_gamemode
         ref: main
       env:
-        GITHUB_TOKEN: ${{ secrets.NORD }}
+        SSH_PRIVATE_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
     - name: Move nord_gamemode to nord_compiler/source
       run: mv nord_gamemode nord_compiler/source
     - name: Setup Node.js
