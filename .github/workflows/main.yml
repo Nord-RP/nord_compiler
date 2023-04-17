@@ -24,6 +24,9 @@ jobs:
         ref: main
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
+    - name: Display environment variables
+      run: |
+        env
     - name: Checkout A Repo
       uses: actions/checkout@v2
       with:
