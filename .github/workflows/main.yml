@@ -17,6 +17,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: Nord-RP/nord_gamemode
+        ref: main
     - name: Move nord_gamemode to nord_compiler/source
       run: mv nord_gamemode nord_compiler/source
     - name: Setup Node.js
