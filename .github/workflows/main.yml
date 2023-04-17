@@ -19,7 +19,7 @@ jobs:
         repository: Nord-RP/nord_gamemode
         ref: main
       env:
-        GITHUB_TOKEN: ${{ secrets.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 }}
+        GITHUB_TOKEN: ${{ secrets.NORD }}
     - name: Move nord_gamemode to nord_compiler/source
       run: mv nord_gamemode nord_compiler/source
     - name: Setup Node.js
