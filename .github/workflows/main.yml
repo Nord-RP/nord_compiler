@@ -9,6 +9,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Setup SSH Agent
+      run: |
+        eval "$(ssh-agent -s)"
+        ssh-add <(echo "$SECRET_REPO_DEPLOY_KEY")
+        echo "$SSH_AUTH_SOCK"
+      env:
+        SSH_AUTH_SOCK: ${{ runner.temp }}/ssh-agent.sock
     - name: Checkout B Repo
       uses: actions/checkout@v2
       with:
