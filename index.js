@@ -40,7 +40,7 @@ function getDirectories(fpath) {
                 console.log(chalk.red("Compiling .lua file: ")+chalk.cyan(element));
                 const filePath = element;
                 const finishPath = "compiled/"+element+"c";
-                execFile("luac_mta.exe", ["-e3", "-s", "-o", finishPath ,filePath]);
+                execFile("luac_mta", ["-e3", "-s", "-o", finishPath ,filePath]);
             }else if(element.includes("meta.xml")){
                 console.log(chalk.yellow("Compiling meta.xml file"));
                 const filePath = element;
