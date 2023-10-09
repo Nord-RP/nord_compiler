@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup SSH Agent
+      run: |
+        eval "$(ssh-agent -s)"
+        ssh-add <(echo "$SECRET_REPO_DEPLOY_KEY")
+        echo "$SSH_AUTH_SOCK"
+      env:
+        SECRET_REPO_DEPLOY_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
+        SSH_AUTH_SOCK: ${{ runner.temp }}/ssh-agent.sock
+    - name: Checkout B Repo
+      uses: actions/checkout@v2
+      with:
+        repository: Nord-RP/nord_compiler
+        ref: main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
+    - name: Display environment variables
+      run: |
+        secrets
+    - name: Checkout A Repo
+      uses: actions/checkout@v2
+      with:
+        repository: Nord-RP/nord_gamemode
+        ref: main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
+    - name: Move nord_gamemode to nord_compiler/source
+      run: mv nord_gamemode nord_compiler/source
+    - name: Setup Node.js
+      uses: actions/setup-node@v2.5.0
+      with:
+        node-version: '14.x'
+    - name: Install dependencies
+      run: npm install
+      working-directory: nord_compiler/source
+    - name: Build
+      run: npm run build
+      working-directory: nord_compiler/source
+    - name: Archive
+      uses: actions/upload-artifact@v2
+      with:
+        name: compiled
+        path: nord_compiler/source/compiled
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: nord_compiler/source/compiled.zip
+        asset_name: compiled.zip
+        asset_content_type: application/zip
